@@ -1,4 +1,5 @@
 // ImGui - standalone example application for Glfw + OpenGL 3, using programmable pipeline
+// If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.
 
 #include <imgui.h>
 #include "imgui_impl_glfw_gl3.h"
@@ -16,7 +17,7 @@ int main(int, char**)
     // Setup window
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
-        exit(1);
+        return 1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -31,7 +32,7 @@ int main(int, char**)
     ImGui_ImplGlfwGL3_Init(window, true);
 
     // Load Fonts
-    // (see extra_fonts/README.txt for more details)
+    // (there is a default font, this is only if you want to change it. see extra_fonts/README.txt for more details)
     //ImGuiIO& io = ImGui::GetIO();
     //io.Fonts->AddFontDefault();
     //io.Fonts->AddFontFromFileTTF("../../extra_fonts/Cousine-Regular.ttf", 15.0f);
@@ -40,12 +41,6 @@ int main(int, char**)
     //io.Fonts->AddFontFromFileTTF("../../extra_fonts/ProggyTiny.ttf", 10.0f);
     //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 
-    // Merge glyphs from multiple fonts into one (e.g. combine default font with another with Chinese glyphs, or add icons)
-    //ImWchar icons_ranges[] = { 0xf000, 0xf3ff, 0 };
-    //ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
-    //io.Fonts->AddFontFromFileTTF("../../extra_fonts/DroidSans.ttf", 18.0f);
-    //io.Fonts->AddFontFromFileTTF("../../extra_fonts/fontawesome-webfont.ttf", 18.0f, &icons_config, icons_ranges);
-
     bool show_test_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImColor(114, 144, 154);
@@ -53,7 +48,6 @@ int main(int, char**)
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
-        ImGuiIO& io = ImGui::GetIO();
         glfwPollEvents();
         ImGui_ImplGlfwGL3_NewFrame();
 
@@ -86,7 +80,9 @@ int main(int, char**)
         }
 
         // Rendering
-        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui::Render();

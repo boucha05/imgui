@@ -10,6 +10,7 @@
 
 #CXX = g++
 
+EXE = opengl3_example
 OBJS = main.o imgui_impl_glfw_gl3.o
 OBJS += ../../imgui.o ../../imgui_demo.o ../../imgui_draw.o
 OBJS += ../libs/gl3w/GL/gl3w.o
@@ -19,34 +20,42 @@ UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S), Linux) #LINUX
 	ECHO_MESSAGE = "Linux"
-	LIBS = `pkg-config --static --libs glfw3`
+	LIBS = -lGL `pkg-config --static --libs glfw3`
 
 	CXXFLAGS = -I../../ -I../libs/gl3w `pkg-config --cflags glfw3`
-	CXXFLAGS += -Wall
+	CXXFLAGS += -Wall -Wformat
 	CFLAGS = $(CXXFLAGS)
 endif
 
 ifeq ($(UNAME_S), Darwin) #APPLE
 	ECHO_MESSAGE = "Mac OS X"
 	LIBS = -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
-	LIBS += -L/usr/local/lib
-	LIBS += -lglfw3
+	LIBS += -L/usr/local/lib -lglfw3
 
 	CXXFLAGS = -I../../ -I../libs/gl3w -I/usr/local/Cellar/glew/1.10.0/include -I/usr/local/include
-	CXXFLAGS += -Wall
+	CXXFLAGS += -Wall -Wformat
 #	CXXFLAGS += -D__APPLE__
 	CFLAGS = $(CXXFLAGS)
 endif
 
+ifeq ($(UNAME_S), MINGW64_NT-6.3)
+   ECHO_MESSAGE = "Windows"
+   LIBS = -lglfw3 -lgdi32 -lopengl32 -limm32
+
+   CXXFLAGS = -I../../ -I../libs/gl3w `pkg-config --cflags glfw3`
+   CXXFLAGS += -Wall -Wformat
+   CFLAGS = $(CXXFLAGS)
+endif
+
+
 .cpp.o:
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-all:imgui_example
+all: $(EXE)
 	@echo Build complete for $(ECHO_MESSAGE)
 
-imgui_example:$(OBJS)
-	$(CXX) -o imgui_example $(OBJS) $(CXXFLAGS) $(LIBS)
+$(EXE): $(OBJS)
+	$(CXX) -o $(EXE) $(OBJS) $(CXXFLAGS) $(LIBS)
 
 clean:
-	rm $(OBJS)
-
+	rm $(EXE) $(OBJS)
